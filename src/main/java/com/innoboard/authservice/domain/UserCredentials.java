@@ -17,7 +17,7 @@ public class UserCredentials extends Auditable {
     private Long id;
 
     @Column(name = "user_id", nullable = false)
-    private String userId;
+    private Long userId;
 
     @Column(name="login", nullable = false, length = 100)
     private String login;

@@ -11,9 +11,9 @@ public interface UserCredentialsRepository extends JpaRepository<UserCredentials
 
     Optional<UserCredentials> findByLogin(String login);
 
-    Optional<UserCredentials> findByUserId(String userId);
+    Optional<UserCredentials> findByUserId(Long userId);
 
     boolean existsByLogin(String login);
 
-    boolean existsByUserId(String userId);
+    boolean existsByUserId(Long userId);
 }
