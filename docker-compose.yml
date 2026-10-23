@@ -9,7 +9,7 @@ services:
       SPRING_PROFILES_ACTIVE: docker
       DB_USERNAME: auth_service
       DB_PASSWORD: auth_service
-      JWT_SECRET: ${JWT_SECRET:local-dev-secret-change-me-min-32-characters-long!!}
+      JWT_SECRET: ${JWT_SECRET:-local-dev-secret-change-me-min-32-characters-long!!}
     ports:
       - "8081:8081"
 
