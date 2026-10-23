@@ -79,7 +79,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         Long userId = jwtService.extractUserId(claims);
-        UserCredentials credentials = repository.findById(userId).orElseThrow(
+        UserCredentials credentials = repository.findByUserId(userId).orElseThrow(
                 () -> new UserCredentialsNotFoundException(userId));
         if(!credentials.isActive()){
             throw new DisabledException("User is deactivated");

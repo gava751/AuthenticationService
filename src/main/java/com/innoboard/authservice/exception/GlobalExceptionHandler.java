@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -18,8 +19,13 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({BadCredentialsException.class, DisabledException.class})
+    @ExceptionHandler(UserCredentialsNotFoundException.class)
     ResponseEntity<ErrorResponse> handleNotFound(UserCredentialsNotFoundException e) {
+        return build(HttpStatus.NOT_FOUND, e.getMessage());
+    }
+
+    @ExceptionHandler({BadCredentialsException.class, DisabledException.class})
+    ResponseEntity<ErrorResponse> handleAuthentication(AuthenticationException e) {
         return build(HttpStatus.UNAUTHORIZED, "Invalid login or password");
     }
 
