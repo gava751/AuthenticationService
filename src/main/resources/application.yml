@@ -6,8 +6,8 @@ spring:
     name: auth-service
 
   datasource:
-    username: ${DB_USERNAME:auth_service}
-    password: ${DB_PASSWORD:auth_service}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -23,6 +23,7 @@ spring:
 
 server:
   port: ${SERVER_PORT:8081}
+  shutdown: graceful
 
 management:
   endpoints:
@@ -36,10 +37,6 @@ management:
 
 app:
   jwt:
-    secret: ${JWT_SECRET:local-dev-secret-change-me-min-32-characters-long!!}
+    secret: ${JWT_SECRET}
     access-token-ttl: ${JWT_ACCESS_TTL:15m}
     refresh-token-ttl: ${JWT_REFRESH_TTL:7d}
-
-logging:
-  level:
-    org.hibernate.SQL: debug

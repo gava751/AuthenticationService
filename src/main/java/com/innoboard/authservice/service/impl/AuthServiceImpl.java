@@ -1,6 +1,7 @@
 package com.innoboard.authservice.service.impl;
 
 import com.innoboard.authservice.config.JwtProperties;
+import com.innoboard.authservice.domain.Role;
 import com.innoboard.authservice.domain.UserCredentials;
 import com.innoboard.authservice.dto.*;
 import com.innoboard.authservice.exception.DuplicateCredentialsException;
@@ -12,7 +13,6 @@ import com.innoboard.authservice.security.JwtService;
 import com.innoboard.authservice.service.AuthService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
-import jakarta.validation.ValidationException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +46,7 @@ public class AuthServiceImpl implements AuthService {
         credentials.setUserId(request.userId());
         credentials.setLogin(request.login());
         credentials.setPasswordHash(passwordEncoder.encode(request.password()));
-        credentials.setRole(request.role());
+        credentials.setRole(Role.USER);
         credentials.setActive(true);
 
         UserCredentials saved = repository.save(credentials);

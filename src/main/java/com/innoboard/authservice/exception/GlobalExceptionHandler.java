@@ -10,6 +10,11 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.time.Instant;
 import java.util.LinkedHashMap;
@@ -56,6 +61,31 @@ public class GlobalExceptionHandler {
     ResponseEntity<ErrorResponse> handleGeneric(Exception e) {
         log.error("Unhandled exception", e);
         return build(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error occurred");
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    ResponseEntity<ErrorResponse> handleDataIntegrity(DataIntegrityViolationException e) {
+        return build(HttpStatus.CONFLICT, "Credentials already exist");
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    ResponseEntity<ErrorResponse> handleUnreadableBody(HttpMessageNotReadableException e) {
+        return build(HttpStatus.BAD_REQUEST, "Malformed request body");
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException e) {
+        return build(HttpStatus.BAD_REQUEST, "Invalid value for parameter: " + e.getName());
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    ResponseEntity<ErrorResponse> handleMethodNotSupported(HttpRequestMethodNotSupportedException e) {
+        return build(HttpStatus.METHOD_NOT_ALLOWED, "Method not allowed");
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    ResponseEntity<ErrorResponse> handleNoResource(NoResourceFoundException e) {
+        return build(HttpStatus.NOT_FOUND, "Resource not found");
     }
 
     private ResponseEntity<ErrorResponse> build(HttpStatus status, String message) {

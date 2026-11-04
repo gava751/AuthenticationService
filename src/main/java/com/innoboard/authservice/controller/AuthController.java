@@ -1,8 +1,6 @@
 package com.innoboard.authservice.controller;
 
-import com.innoboard.authservice.domain.UserCredentials;
 import com.innoboard.authservice.dto.*;
-import com.innoboard.authservice.repository.UserCredentialsRepository;
 import com.innoboard.authservice.security.AuthUser;
 import com.innoboard.authservice.service.AuthService;
 import jakarta.validation.Valid;
