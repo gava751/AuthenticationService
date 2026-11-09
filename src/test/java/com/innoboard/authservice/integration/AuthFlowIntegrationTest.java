@@ -1,6 +1,5 @@
 package com.innoboard.authservice.integration;
 
-import com.innoboard.authservice.client.UserClient;
 import com.innoboard.authservice.dto.CreateUserRequest;
 import com.innoboard.authservice.dto.LoginRequest;
 import com.innoboard.authservice.dto.RegisterCredentialsRequest;

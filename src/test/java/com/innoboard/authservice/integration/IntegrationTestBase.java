@@ -4,7 +4,6 @@ import com.innoboard.authservice.client.UserClient;
 import com.innoboard.authservice.dto.CreateUserRequest;
 import com.innoboard.authservice.dto.LoginRequest;
 import com.innoboard.authservice.dto.RegisterCredentialsRequest;
-import com.innoboard.authservice.dto.RegisterCredentialsRequest;
 import com.innoboard.authservice.repository.CredentialRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
