@@ -5,4 +5,8 @@ spring:
 
 app:
   jwt:
-    secret: test-secret-key-for-auth-service-min-32-bytes!!
+    key-id: test-key
+    private-key: classpath:keys/jwt-test-private.pem
+    public-key: classpath:keys/jwt-test-public.pem
+  services:
+    user-url: http://user-service-test

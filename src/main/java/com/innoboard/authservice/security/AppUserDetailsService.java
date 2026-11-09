@@ -1,9 +1,8 @@
 package com.innoboard.authservice.security;
 
-import com.innoboard.authservice.domain.UserCredentials;
-import com.innoboard.authservice.repository.UserCredentialsRepository;
+import com.innoboard.authservice.domain.Credential;
+import com.innoboard.authservice.repository.CredentialRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,18 +12,14 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AppUserDetailsService implements UserDetailsService {
 
-    private final UserCredentialsRepository repository;
+    private final CredentialRepository repository;
 
     @Override
-    public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException{
-        UserCredentials credentials = repository.findByLogin(login)
-                .orElseThrow(()->new UsernameNotFoundException("Invalid login or password"));
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Credential credentials = repository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Invalid login or password"));
 
-        return User.builder()
-                .username(credentials.getLogin())
-                .password(credentials.getPasswordHash())
-                .roles(credentials.getRole().name())
-                .disabled(!credentials.isActive())
-                .build();
+        return new AuthUser(credentials.getUserId(), credentials.getRole(), credentials.getUsername(),
+                credentials.getPasswordHash(), credentials.isActive());
     }
 }

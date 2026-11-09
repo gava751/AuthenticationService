@@ -10,9 +10,14 @@ services:
       DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
       DB_USERNAME: ${POSTGRES_USER}
       DB_PASSWORD: ${POSTGRES_PASSWORD}
-      JWT_SECRET: ${JWT_SECRET}
+      JWT_KEY_ID: ${JWT_KEY_ID}
+      JWT_PRIVATE_KEY_PATH: keys/jwt-private.pem
+      JWT_PUBLIC_KEY_PATH: keys/jwt-public.pem
+      USER_SERVICE_URL: ${USER_SERVICE_URL:-http://host.docker.internal:8082}
     ports:
       - "8081:8081"
+    volumes:
+      - ./keys:/app/keys:ro
 
   postgres:
     image: postgres:18-alpine

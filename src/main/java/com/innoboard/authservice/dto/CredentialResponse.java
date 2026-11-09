@@ -2,10 +2,11 @@ package com.innoboard.authservice.dto;
 
 import java.time.Instant;
 
-public record UserCredentialsResponse (
+public record CredentialResponse(
         Long id,
         Long userId,
-        String login,
+        String username,
         String role,
         Instant createdAt
-){}
+) {
+}

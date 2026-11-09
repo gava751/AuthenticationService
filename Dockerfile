@@ -15,6 +15,11 @@ RUN java -Djarmode=tools -jar app.jar extract --layers --launcher --destination 
 FROM eclipse-temurin:25-jre
 WORKDIR /app
 
+# eclipse-temurin images ship neither curl nor wget; the compose healthcheck needs curl.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN useradd --system --uid 1001 appuser
 USER appuser
 

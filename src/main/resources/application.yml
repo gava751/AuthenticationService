@@ -37,6 +37,10 @@ management:
 
 app:
   jwt:
-    secret: ${JWT_SECRET}
+    key-id: ${JWT_KEY_ID:auth-service-1}
+    private-key: file:${JWT_PRIVATE_KEY_PATH}
+    public-key: file:${JWT_PUBLIC_KEY_PATH}
     access-token-ttl: ${JWT_ACCESS_TTL:15m}
     refresh-token-ttl: ${JWT_REFRESH_TTL:7d}
+  services:
+    user-url: ${USER_SERVICE_URL:http://localhost:8082}

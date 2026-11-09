@@ -1,5 +1,6 @@
 package com.innoboard.authservice.config;
 
+import com.innoboard.authservice.exception.ErrorResponse;
 import com.innoboard.authservice.security.JwtAuthenticationFilter;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
@@ -17,9 +18,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
-
+import java.time.Instant;
 
 @Configuration
 @EnableWebSecurity
@@ -41,32 +43,34 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
+                                                   JwtAuthenticationFilter jwtAuthenticationFilter,
+                                                   ObjectMapper objectMapper) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login", "/auth/register", "/auth/validate", "/auth/refresh")
+                        .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/refresh")
                         .permitAll()
-                        .requestMatchers("/actuator/health/**").permitAll()
+                        .requestMatchers("/actuator/health/**", "/.well-known/jwks.json").permitAll()
                         .anyRequest().authenticated())
-                        .exceptionHandling(ex -> ex
+                .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, e) ->
-                                writeError(response, HttpServletResponse.SC_UNAUTHORIZED,
+                                writeError(response, objectMapper, HttpServletResponse.SC_UNAUTHORIZED,
                                         "Missing or invalid authentication token"))
                         .accessDeniedHandler((request, response, e) ->
-                                writeError(response, HttpServletResponse.SC_FORBIDDEN,
+                                writeError(response, objectMapper, HttpServletResponse.SC_FORBIDDEN,
                                         "Access to this resource is denied")))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    private void writeError(HttpServletResponse response, int status, String message) throws IOException {
+    private void writeError(HttpServletResponse response, ObjectMapper objectMapper, int status, String message)
+            throws IOException {
+        ErrorResponse body = new ErrorResponse(
+                status, status == 401 ? "Unauthorized" : "Forbidden", message, Instant.now());
         response.setStatus(status);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.getWriter().write(
-                "{\"status\":%d,\"error\":\"%s\",\"message\":\"%s\"}"
-                        .formatted(status, status == 401 ? "Unauthorized" : "Forbidden", message));
+        response.getWriter().write(objectMapper.writeValueAsString(body));
     }
 }
