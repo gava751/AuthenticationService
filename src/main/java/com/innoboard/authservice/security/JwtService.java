@@ -11,10 +11,12 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -33,11 +35,13 @@ public class JwtService {
     private final JwtProperties properties;
     private final RSAPrivateKey privateKey;
     private final RSAPublicKey publicKey;
+    private final Map<String, Object> jwks;
 
     public JwtService(JwtProperties properties) {
         this.properties = properties;
         this.privateKey = readPrivateKey(properties.privateKey());
         this.publicKey = readPublicKey(properties.publicKey());
+        this.jwks = buildJwks();
     }
 
     public String generateAccessToken(Long userId, Role role) {
@@ -76,15 +80,27 @@ public class JwtService {
     }
 
     public Map<String, Object> getJwks() {
+        return jwks;
+    }
+
+    private Map<String, Object> buildJwks() {
         Base64.Encoder encoder = Base64.getUrlEncoder().withoutPadding();
         Map<String, Object> jwk = new LinkedHashMap<>();
         jwk.put("kty", "RSA");
         jwk.put("use", "sig");
         jwk.put("alg", "RS256");
         jwk.put("kid", properties.keyId());
-        jwk.put("n", encoder.encodeToString(publicKey.getModulus().toByteArray()));
-        jwk.put("e", encoder.encodeToString(publicKey.getPublicExponent().toByteArray()));
+        jwk.put("n", encoder.encodeToString(minimalBytes(publicKey.getModulus())));
+        jwk.put("e", encoder.encodeToString(minimalBytes(publicKey.getPublicExponent())));
         return Map.of("keys", List.of(jwk));
+    }
+
+    private static byte[] minimalBytes(BigInteger value) {
+        byte[] bytes = value.toByteArray();
+        if (bytes.length > 1 && bytes[0] == 0) {
+            return Arrays.copyOfRange(bytes, 1, bytes.length);
+        }
+        return bytes;
     }
 
     private String buildToken(Long userId, Role role, String type, Duration ttl) {

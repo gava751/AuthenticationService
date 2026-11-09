@@ -199,6 +199,22 @@ class AuthServiceImplTest {
         }
 
         @Test
+        @DisplayName("password beyond the BCrypt 72-byte limit fails before User Service is called")
+        void oversizedPasswordFailsBeforeUserIsCreated() {
+            String oversizedPassword = "p".repeat(73);
+            RegisterCredentialsRequest request = new RegisterCredentialsRequest(
+                    LOGIN, oversizedPassword, NAME, SURNAME, BIRTH_DATE, EMAIL);
+            when(repository.existsByUsername(LOGIN)).thenReturn(false);
+            when(passwordEncoder.encode(oversizedPassword))
+                    .thenThrow(new IllegalArgumentException("password cannot be more than 72 bytes"));
+
+            assertThatThrownBy(() -> authService.register(request))
+                    .isInstanceOf(IllegalArgumentException.class);
+            verify(userClient, never()).createUser(any());
+            verify(userClient, never()).deleteUser(any());
+        }
+
+        @Test
         @DisplayName("any local failure rethrows after compensation, rollback error does not mask it")
         void arbitraryLocalFailureCompensatesAndRethrows() {
             when(repository.existsByUsername(LOGIN)).thenReturn(false);

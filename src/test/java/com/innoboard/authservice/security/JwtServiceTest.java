@@ -5,16 +5,21 @@ import com.innoboard.authservice.domain.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.spec.RSAPublicKeySpec;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Base64;
@@ -61,14 +66,38 @@ class JwtServiceTest {
     void tokenSignedWithRs256AndKeyId() {
         String token = jwtService.generateAccessToken(USER_ID, Role.USER);
 
-        Map<String, Object> jwk = jwk();
+        Jws<Claims> parsed = Jwts.parser()
+                .verifyWith(keyPair.getPublic())
+                .build()
+                .parseSignedClaims(token);
 
-        assertThat(jwk.get("alg")).isEqualTo("RS256");
+        assertThat(parsed.getHeader().getAlgorithm()).isEqualTo("RS256");
+        assertThat(parsed.getHeader().getKeyId()).isEqualTo(KEY_ID);
+    }
+
+    @Test
+    @DisplayName("public key rebuilt from jwks.json verifies an issued token")
+    void jwksKeyVerifiesIssuedToken() throws Exception {
+        Map<String, Object> jwk = jwk();
         assertThat(jwk.get("kty")).isEqualTo("RSA");
-        assertThat(jwk.get("kid")).isEqualTo(KEY_ID);
+        assertThat(jwk.get("alg")).isEqualTo("RS256");
         assertThat(jwk.get("use")).isEqualTo("sig");
-        assertThat((String) jwk.get("n")).isNotEmpty();
-        assertThat((String) jwk.get("e")).isNotEmpty();
+        assertThat(jwk.get("kid")).isEqualTo(KEY_ID);
+        RSAPublicKeySpec spec = new RSAPublicKeySpec(
+                new BigInteger(1, Base64.getUrlDecoder().decode((String) jwk.get("n"))),
+                new BigInteger(1, Base64.getUrlDecoder().decode((String) jwk.get("e"))));
+        PublicKey publicKey = KeyFactory.getInstance("RSA").generatePublic(spec);
+
+        String token = jwtService.generateAccessToken(USER_ID, Role.USER);
+
+        Claims claims = Jwts.parser()
+                .verifyWith(publicKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+
+        assertThat(jwtService.extractUserId(claims)).isEqualTo(USER_ID);
+        assertThat(jwtService.extractRole(claims)).isEqualTo(Role.USER);
     }
 
     @Test

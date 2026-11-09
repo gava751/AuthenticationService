@@ -54,10 +54,10 @@ public class AuthServiceImpl implements AuthService {
             throw new DuplicateCredentialsException("Login already taken: " + request.login());
         }
 
+        String passwordHash = passwordEncoder.encode(request.password());
+
         Long userId = userClient.createUser(new CreateUserRequest(
                 request.name(), request.surname(), request.birthDate(), request.email()));
-
-        String passwordHash = passwordEncoder.encode(request.password());
 
         try {
             return transactionTemplate.execute(status -> {

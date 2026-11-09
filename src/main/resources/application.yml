@@ -44,3 +44,5 @@ app:
     refresh-token-ttl: ${JWT_REFRESH_TTL:7d}
   services:
     user-url: ${USER_SERVICE_URL:http://localhost:8082}
+    connect-timeout: ${USER_SERVICE_CONNECT_TIMEOUT:2s}
+    read-timeout: ${USER_SERVICE_READ_TIMEOUT:5s}

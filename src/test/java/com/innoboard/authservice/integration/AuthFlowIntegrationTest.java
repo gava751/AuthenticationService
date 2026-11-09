@@ -101,10 +101,14 @@ class AuthFlowIntegrationTest extends IntegrationTestBase {
 
     @Test
     void validateEndpointIsRemoved() throws Exception {
+        register(LOGIN, PASSWORD);
+        String accessToken = login(LOGIN, PASSWORD).accessToken();
+
         mockMvc.perform(post("/api/auth/validate")
+                        .header("Authorization", "Bearer " + accessToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"token\":\"anything\"}"))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isNotFound());
     }
 
     @Test
