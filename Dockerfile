@@ -2,6 +2,7 @@ FROM maven:3.9-eclipse-temurin-25 AS build
 WORKDIR /workspace
 
 COPY pom.xml .
+COPY checkstyle.xml .
 RUN mvn -q -B dependency:go-offline
 
 COPY src ./src
