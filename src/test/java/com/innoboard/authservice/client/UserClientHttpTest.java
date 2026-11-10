@@ -55,7 +55,7 @@ class UserClientHttpTest {
         assertThat(userId).isEqualTo(5L);
         RecordedRequest request = userApi.takeRequest();
         assertThat(request.getMethod()).isEqualTo("POST");
-        assertThat(request.getPath()).isEqualTo("/api/users");
+        assertThat(request.getPath()).isEqualTo("/internal/users");
         assertThat(request.getHeader("Content-Type")).startsWith(MediaType.APPLICATION_JSON_VALUE);
     }
 
@@ -99,7 +99,7 @@ class UserClientHttpTest {
     }
 
     @Test
-    @DisplayName("compensation sends DELETE /api/users/{id}")
+    @DisplayName("compensation sends DELETE /internal/users/{id}")
     void deleteUserSendsDeleteRequest() throws Exception {
         userApi.enqueue(new MockResponse().setResponseCode(204));
 
@@ -107,6 +107,6 @@ class UserClientHttpTest {
 
         RecordedRequest request = userApi.takeRequest();
         assertThat(request.getMethod()).isEqualTo("DELETE");
-        assertThat(request.getPath()).isEqualTo("/api/users/7");
+        assertThat(request.getPath()).isEqualTo("/internal/users/7");
     }
 }

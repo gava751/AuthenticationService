@@ -23,6 +23,7 @@
 | `JWT_PRIVATE_KEY_PATH` | **обязательна, без дефолта** | Путь к приватному RSA-ключу (PKCS#8, подпись токенов) |
 | `JWT_PUBLIC_KEY_PATH` | **обязательна, без дефолта** | Путь к публичному RSA-ключу (X.509, JWKS) |
 | `USER_SERVICE_URL` | `http://localhost:8082` | URL User Service для регистрации |
+| `INTERNAL_SERVICE_TOKEN` | **обязателен, без дефолта** | Общий секрет для `/internal/**` User Service; должен совпадать со значением в user-service (локальное значение — в `.env`) |
 | `JWT_ACCESS_TTL` | `15m` | Время жизни access-токена |
 | `JWT_REFRESH_TTL` | `7d` | Время жизни refresh-токена |
 | `SERVER_PORT` | `8081` | Порт сервиса |
@@ -58,6 +59,7 @@ export DB_USERNAME=... DB_PASSWORD=...
 export JWT_PRIVATE_KEY_PATH="$PWD/keys/jwt-private.pem"
 export JWT_PUBLIC_KEY_PATH="$PWD/keys/jwt-public.pem"
 export DB_URL=jdbc:postgresql://localhost:5433/auth_service
+export INTERNAL_SERVICE_TOKEN=...
 
 # 3. ключи (см. раздел «Ключи»)
 mkdir -p keys

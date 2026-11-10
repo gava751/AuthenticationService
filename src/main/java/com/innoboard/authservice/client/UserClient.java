@@ -20,7 +20,7 @@ public class UserClient {
     public Long createUser(CreateUserRequest request) {
         try {
             UserResponse response = userRestClient.post()
-                    .uri("/api/users")
+                    .uri("/internal/users")
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(request)
                     .retrieve()
@@ -41,7 +41,7 @@ public class UserClient {
 
     public void deleteUser(Long userId) {
         userRestClient.delete()
-                .uri("/api/users/{id}", userId)
+                .uri("/internal/users/{id}", userId)
                 .retrieve()
                 .toBodilessEntity();
     }

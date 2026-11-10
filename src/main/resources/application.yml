@@ -42,6 +42,8 @@ app:
     public-key: file:${JWT_PUBLIC_KEY_PATH}
     access-token-ttl: ${JWT_ACCESS_TTL:15m}
     refresh-token-ttl: ${JWT_REFRESH_TTL:7d}
+  internal:
+    token: ${INTERNAL_SERVICE_TOKEN}
   services:
     user-url: ${USER_SERVICE_URL:http://localhost:8082}
     connect-timeout: ${USER_SERVICE_CONNECT_TIMEOUT:2s}

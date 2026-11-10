@@ -14,6 +14,7 @@ services:
       JWT_PRIVATE_KEY_PATH: keys/jwt-private.pem
       JWT_PUBLIC_KEY_PATH: keys/jwt-public.pem
       USER_SERVICE_URL: ${USER_SERVICE_URL:-http://host.docker.internal:8082}
+      INTERNAL_SERVICE_TOKEN: ${INTERNAL_SERVICE_TOKEN:?INTERNAL_SERVICE_TOKEN is not set}
     ports:
       - "8081:8081"
     volumes:

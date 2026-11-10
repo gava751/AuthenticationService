@@ -94,10 +94,10 @@ class RegisterCompensationIntegrationTest {
         RecordedRequest created = userApi.takeRequest(1, TimeUnit.SECONDS);
         assertThat(created).isNotNull();
         assertThat(created.getMethod()).isEqualTo("POST");
-        assertThat(created.getPath()).isEqualTo("/api/users");
+        assertThat(created.getPath()).isEqualTo("/internal/users");
         RecordedRequest deleted = userApi.takeRequest(1, TimeUnit.SECONDS);
         assertThat(deleted).isNotNull();
         assertThat(deleted.getMethod()).isEqualTo("DELETE");
-        assertThat(deleted.getPath()).isEqualTo("/api/users/1");
+        assertThat(deleted.getPath()).isEqualTo("/internal/users/1");
     }
 }

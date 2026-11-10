@@ -8,5 +8,7 @@ app:
     key-id: test-key
     private-key: classpath:keys/jwt-test-private.pem
     public-key: classpath:keys/jwt-test-public.pem
+  internal:
+    token: test-internal-token
   services:
     user-url: http://user-service-test
