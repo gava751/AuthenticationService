@@ -31,7 +31,7 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:5.8.0.7211:sonar -Dsonar.projectKey=gava751_AuthenticationService -Dsonar.organization=gava751 -Dsonar.qualitygate.wait=true
+        run: mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:5.8.0.7211:sonar -Dsonar.projectKey=gava751_AuthenticationService -Dsonar.organization=gava751 -Dsonar.qualitygate.wait=${{ github.event_name == 'pull_request' && 'true' || 'false' }}
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9
