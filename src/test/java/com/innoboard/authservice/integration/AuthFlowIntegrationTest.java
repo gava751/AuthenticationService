@@ -225,6 +225,16 @@ class AuthFlowIntegrationTest extends IntegrationTestBase {
     }
 
     @Test
+    @DisplayName("multi-byte password over 72 bytes is rejected with 400, not 500")
+    void registerMultiBytePasswordOverByteLimitRejected() throws Exception {
+        mockMvc.perform(post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(registerJson(LOGIN, "\u65e5".repeat(40))))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors.password").isNotEmpty());
+    }
+
+    @Test
     @DisplayName("missing profile field is reported by name")
     void registerMissingNameRejected() throws Exception {
         String body = "{\"login\":\"" + LOGIN + "\",\"password\":\"" + PASSWORD + "\","

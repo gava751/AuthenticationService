@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class JwtService {
+public final class JwtService {
 
     public static final String USER_ID_CLAIM = "user_id";
     public static final String TYPE_CLAIM = "type";
@@ -80,7 +80,7 @@ public class JwtService {
     }
 
     public Map<String, Object> getJwks() {
-        return jwks;
+        return Map.copyOf(jwks);
     }
 
     private Map<String, Object> buildJwks() {

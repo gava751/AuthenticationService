@@ -84,7 +84,9 @@ public class AuthServiceImpl implements AuthService {
     public TokenResponse login(LoginRequest request) {
         Authentication authentication = authenticationManager.authenticate(
                 UsernamePasswordAuthenticationToken.unauthenticated(request.login(), request.password()));
-        AuthUser user = (AuthUser) authentication.getPrincipal();
+        if (!(authentication.getPrincipal() instanceof AuthUser user)) {
+            throw new IllegalStateException("Unexpected authentication principal");
+        }
         return buildTokenResponse(user.userId(), user.role());
     }
 

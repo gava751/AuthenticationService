@@ -41,16 +41,37 @@ openssl pkey -in keys/jwt-private.pem -pubout -out keys/jwt-public.pem
 
 ## Запуск
 
+Требуется JDK 25.
+
 ```bash
-# локальная инфраструктура
+cp .env.example .env
+```
+
+`.env` читает только docker compose — Spring его не читает. Для локального запуска экспортируйте переменные (можно целиком: `set -a; source .env; set +a`):
+
+```bash
+# 1. инфраструктура (Postgres наружу на 5433)
 docker compose up -d postgres
 
-# приложение локально
-export JAVA_HOME="/c/Users/gava751/.jdks/temurin-25.0.4.1"
+# 2. переменные окружения
+export DB_USERNAME=... DB_PASSWORD=...
+export JWT_PRIVATE_KEY_PATH="$PWD/keys/jwt-private.pem"
+export JWT_PUBLIC_KEY_PATH="$PWD/keys/jwt-public.pem"
+export DB_URL=jdbc:postgresql://localhost:5433/auth_service
+
+# 3. ключи (см. раздел «Ключи»)
+mkdir -p keys
+openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 -out keys/jwt-private.pem
+openssl pkey -in keys/jwt-private.pem -pubout -out keys/jwt-public.pem
+
+# 4. приложение локально
 ./mvnw spring-boot:run
 
 # всё в докере
 docker compose up -d --build
+
+# тесты (нужен Docker для Testcontainers)
+./mvnw verify
 ```
 
-Порт сервиса — **8081** (8080 занят API Gateway, user-service на 8082). Postgres наружу — **5433** (5432 занят user-service).
+Порт сервиса — **8081** (8080 занят API Gateway, user-service на 8082). Postgres наружу — **5433** (5432 занят user-service), поэтому `DB_URL` выше указывает на 5433.
