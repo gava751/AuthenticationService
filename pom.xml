@@ -24,6 +24,8 @@
         <jjwt.version>0.13.0</jjwt.version>
 
         <sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.projectKey>gava751_AuthenticationService</sonar.projectKey>
+        <sonar.organization>gava751</sonar.organization>
     </properties>
 
     <dependencies>
